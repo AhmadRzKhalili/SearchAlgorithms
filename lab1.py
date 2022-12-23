@@ -3,20 +3,50 @@ from graph import Edge, Graph
 
 
 def path_edges(graph: Graph, path) -> List[Edge]:
-    # Find edges on the path
-    raise NotImplementedError
+    edges = []
+
+    for i in range(len(path) - 1):
+        edge = graph.get_edge(path[i], path[i + 1])
+        edges.append(edge)
+
+    return edges
 
 
 def path_length(graph, path) -> int:
-    # Calculate the length of the path
-    raise NotImplementedError
+    cost = 0
+
+    for i in range(len(path) - 1):
+        edge = graph.get_edge(path[i], path[i + 1])
+        cost += edge.length
+
+    return cost
 
 
 # Implement the following algorithms:
 
 
 def bfs(graph: Graph, start, goal):
-    raise NotImplementedError
+    agenda = []
+    agenda.append([start])
+    
+    while len(agenda) != 0:
+        path = agenda.pop(0)
+        node = path[-1]
+        neighbors = graph.get_connected_nodes(node)
+
+        for n in neighbors:
+            if n not in path:
+                path_copy = path.copy()
+                path_copy.append(n)
+                
+                if n == goal:
+                    return path_copy
+                else:
+                    agenda.append(path_copy)
+
+    return []
+
+
 
 
 def dfs(graph: Graph, start, goal):
@@ -60,11 +90,17 @@ if __name__ == "__main__":
     start = 'The Chamber'
     goal = 'Common Area'
 
+    # from test_data import GRAPH0
+    # graph = GRAPH0
+    # start = 'S'
+    # goal = 'G'
+
     # Use different algorithms here
     path = bfs(graph, start, goal)
 
     if path:
         edges = path_edges(graph, path)
+        print(edges)
         cost = path_length(graph, path)
         print("Path cost=", cost)
 
