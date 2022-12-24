@@ -38,11 +38,15 @@ def bfs(graph: Graph, start, goal):
             if n not in path:
                 path_copy = path.copy()
                 path_copy.append(n)
-                
+                agenda.append(path_copy)
+
                 if n == goal:
+                    print(agenda, end="\n\n")
                     return path_copy
-                else:
-                    agenda.append(path_copy)
+                    
+                    
+        
+        print(agenda,  end="\n\n")
 
     return []
 
@@ -85,15 +89,15 @@ def is_consistent(graph, goal):
 if __name__ == "__main__":
     # Test different graphs from 'test_data.py'
     # Be sure to change 'start' and 'goal' for each graph
-    from test_data import GRAPH1
-    graph = GRAPH1
-    start = 'The Chamber'
-    goal = 'Common Area'
+    # from test_data import GRAPH1
+    # graph = GRAPH1
+    # start = 'The Chamber'
+    # goal = 'Common Area'
 
-    # from test_data import GRAPH0
-    # graph = GRAPH0
-    # start = 'S'
-    # goal = 'G'
+    from test_data import TESTGRAPH
+    graph = TESTGRAPH
+    start = 'S'
+    goal = 'G'
 
     # Use different algorithms here
     path = bfs(graph, start, goal)
@@ -113,7 +117,6 @@ if __name__ == "__main__":
             draw_graph(graph, goal=goal, output_name=algorithm_label+" Graph",
                        selected_edges=edges, graph_label=algorithm_label)
         except ModuleNotFoundError:
-            print(
-                "\n\nPlease install graphviz and the python graphviz library for visualization.")
+            print("\n\nPlease install graphviz and the python graphviz library for visualization.")
     else:
         print("Path not found")
