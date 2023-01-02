@@ -32,6 +32,12 @@ def bfs(graph: Graph, start, goal):
     while len(agenda) != 0:
         path = agenda.pop(0)
         node = path[-1]
+
+        if node == goal:
+            print(agenda, end="\n\n")
+            return path
+                    
+
         neighbors = graph.get_connected_nodes(node)
 
         for n in neighbors:
@@ -39,11 +45,6 @@ def bfs(graph: Graph, start, goal):
                 path_copy = path.copy()
                 path_copy.append(n)
                 agenda.append(path_copy)
-
-                if n == goal:
-                    print(agenda, end="\n\n")
-                    return path_copy
-                    
                     
         
         print(agenda,  end="\n\n")
@@ -51,10 +52,38 @@ def bfs(graph: Graph, start, goal):
     return []
 
 
-
-
 def dfs(graph: Graph, start, goal):
-    raise NotImplementedError
+    agenda = []
+    agenda.append([start])
+    
+    while len(agenda) != 0:
+        path = agenda.pop(0)
+        node = path[-1]
+
+        if node == goal:
+            print(agenda, end="\n\n")
+            return path
+
+        neighbors = graph.get_connected_nodes(node)
+
+        extended_nodes = []
+
+        for n in neighbors:
+
+            if n not in path:
+                path_copy = path.copy()
+                path_copy.append(n)
+                extended_nodes.append(path_copy)
+                # agenda.insert(0, path_copy)            
+
+                    
+        extended_nodes = extended_nodes[::-1]
+        for extended_node in extended_nodes:
+            agenda.insert(0, extended_node)       
+        
+        print(agenda,  end="\n\n")
+
+    return []
 
 
 def ids(graph: Graph, start, goal):
@@ -103,6 +132,8 @@ if __name__ == "__main__":
     path = bfs(graph, start, goal)
 
     if path:
+        print(path)
+
         edges = path_edges(graph, path)
         print(edges)
         cost = path_length(graph, path)
