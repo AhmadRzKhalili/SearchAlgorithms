@@ -176,16 +176,11 @@ def a_star(graph: Graph, start, goal):
                 path_copy = path.copy()
                 path_copy.append(n)
 
-                # print(path[-1], "->", n, graph.get_edge(path[-1], n).length)
-                # print(n, "->",graph.get_heuristic(n, goal))
-                # print(path[-1], "->", graph.get_heuristic(path[-1], goal))
-
                 path_length = 0
                 for i in range(1, len(path_copy) - 2):
                     path_length += graph.get_edge(path_copy[i], path_copy[i + 1]).length
 
                 h = graph.get_edge(path[-1], n).length + graph.get_heuristic(n, goal) + path_length
-                # graph.set_heuristic(n, goal, h)
                 
                 path_copy[0] = h
                 extended_nodes.append(path_copy)         
@@ -197,14 +192,10 @@ def a_star(graph: Graph, start, goal):
         
         
         agenda = sorted(agenda, key=lambda x: (x[0], len(x)))
-        # agenda.sort(key=sort_by_heuristic)
 
         print(agenda, end="\n\n")
 
     return []
-
-def sort_by_heuristic(p):
-  return p[0]
 
 # (Optional) Do these for extra credit:
 def is_admissible(graph, goal):
