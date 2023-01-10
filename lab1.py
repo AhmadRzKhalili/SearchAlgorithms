@@ -88,56 +88,75 @@ def dfs(graph: Graph, start, goal):
 
 def ids(graph: Graph, start, goal):
     
-    # level = 0
-    # level_limit = 0
+    level = 0
+    level_limit = 1
 
     
-    # agenda = []
-    # agenda.append([start])
-    
-    # while len(agenda) != 0:
+    agenda = []
+    agenda.append([start])
 
-    #     if level <= level_limit:
-    #         if level == 0:
-    #             agenda = []
-    #             agenda.append([start])
+    print(agenda, end="\n\n")
+    if start == goal:
+        return [start]
 
+    while len(agenda) != 0:
 
-    #         path = agenda.pop(0)
-    #         node = path[-1]
+        agenda = []
+        agenda.append([start])
+        agenda_copy = agenda.copy()
 
-    #         if node == goal:
-    #             print(agenda, end="\n\n")
-    #             return path
+        while get_graph_level(agenda) <= level_limit:
 
-    #         neighbors = graph.get_connected_nodes(node)
+            path = agenda.pop(0)
 
-    #         extended_nodes = []
+            if len(path) == level_limit:
+                agenda.append(path)
+                continue
 
-    #         for n in neighbors:
+            node = path[-1]
 
-    #             if n not in path:
-    #                 path_copy = path.copy()
-    #                 path_copy.append(n)
-    #                 extended_nodes.append(path_copy)
-    #                 # agenda.insert(0, path_copy)            
+            if node == goal:
+                print(agenda, end="\n\n")
+                return path
+
+            neighbors = graph.get_connected_nodes(node)
+            
+            extended_nodes = []
+
+            for n in neighbors:
+
+                if n not in path:
+                    path_copy = path.copy()
+                    path_copy.append(n)
+                    extended_nodes.append(path_copy)
+                    # agenda.insert(0, path_copy)            
 
                         
-    #         extended_nodes = extended_nodes[::-1]
-    #         for extended_node in extended_nodes:
-    #             agenda.insert(0, extended_node)       
+            extended_nodes = extended_nodes[::-1]
+            for extended_node in extended_nodes:
+                agenda.insert(0, extended_node)       
             
-    #         print(agenda,  end="\n\n")
+            print(agenda,  end="\n\n")
+        
+        print("---------------------------")
+        agenda_copy = agenda.copy()
+            # level += 1
 
-    #         level += 1
-
-    #     if level > level_limit:
-    #         # print("-", (level - 1), agenda,  end="\n\n")
-    #         level = 0
-    #         level_limit += 1
+        # if level > level_limit:
+        #     # print("-", (level - 1), agenda,  end="\n\n")
+        #     level = 0
+        level_limit += 1
 
     return []
 
+def get_graph_level(nodes):
+    level = len(nodes[0])
+
+    for node in nodes:
+        if len(node) > level:
+            level = len(node)
+    
+    return level
 
 def hill_climbing(graph: Graph, start, goal):
     raise NotImplementedError
@@ -150,7 +169,7 @@ def beam_search(graph: Graph, start, goal, beam_width):
 def ucs(graph: Graph, start, goal):
     raise NotImplementedError
 
-
+# todo: fix node priority in agenda paths
 def a_star(graph: Graph, start, goal):
     agenda = []
     agenda.append([graph.get_heuristic(start, goal), start])
@@ -220,7 +239,7 @@ if __name__ == "__main__":
     goal = 'G'
 
     # Use different algorithms here
-    path = a_star(graph, start, goal)
+    path = ids(graph, start, goal)
 
     if path:
         print(path)
@@ -233,7 +252,7 @@ if __name__ == "__main__":
         # Visualization (extra credit)
         try:
             # Change 'algorithm_label' for better labelling
-            algorithm_label = "A_star"
+            algorithm_label = "IDS"
 
             from visualize import draw_graph
             draw_graph(graph, goal=goal, output_name=algorithm_label+" Graph",
