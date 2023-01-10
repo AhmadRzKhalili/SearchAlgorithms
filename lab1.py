@@ -87,7 +87,56 @@ def dfs(graph: Graph, start, goal):
 
 
 def ids(graph: Graph, start, goal):
-    raise NotImplementedError
+    
+    # level = 0
+    # level_limit = 0
+
+    
+    # agenda = []
+    # agenda.append([start])
+    
+    # while len(agenda) != 0:
+
+    #     if level <= level_limit:
+    #         if level == 0:
+    #             agenda = []
+    #             agenda.append([start])
+
+
+    #         path = agenda.pop(0)
+    #         node = path[-1]
+
+    #         if node == goal:
+    #             print(agenda, end="\n\n")
+    #             return path
+
+    #         neighbors = graph.get_connected_nodes(node)
+
+    #         extended_nodes = []
+
+    #         for n in neighbors:
+
+    #             if n not in path:
+    #                 path_copy = path.copy()
+    #                 path_copy.append(n)
+    #                 extended_nodes.append(path_copy)
+    #                 # agenda.insert(0, path_copy)            
+
+                        
+    #         extended_nodes = extended_nodes[::-1]
+    #         for extended_node in extended_nodes:
+    #             agenda.insert(0, extended_node)       
+            
+    #         print(agenda,  end="\n\n")
+
+    #         level += 1
+
+    #     if level > level_limit:
+    #         # print("-", (level - 1), agenda,  end="\n\n")
+    #         level = 0
+    #         level_limit += 1
+
+    return []
 
 
 def hill_climbing(graph: Graph, start, goal):
@@ -103,8 +152,59 @@ def ucs(graph: Graph, start, goal):
 
 
 def a_star(graph: Graph, start, goal):
-    raise NotImplementedError
+    agenda = []
+    agenda.append([graph.get_heuristic(start, goal), start])
+    print(agenda, end="\n\n")
+    
+    while len(agenda) != 0:
 
+
+        path = agenda.pop(0)
+        node = path[-1]
+
+        if node == goal:
+            print(agenda, end="\n\n")
+            return path[1:]
+
+        neighbors = graph.get_connected_nodes(node)
+        
+        extended_nodes = []
+
+        for n in neighbors:
+
+            if n not in path:
+                path_copy = path.copy()
+                path_copy.append(n)
+
+                # print(path[-1], "->", n, graph.get_edge(path[-1], n).length)
+                # print(n, "->",graph.get_heuristic(n, goal))
+                # print(path[-1], "->", graph.get_heuristic(path[-1], goal))
+
+                path_length = 0
+                for i in range(1, len(path_copy) - 2):
+                    path_length += graph.get_edge(path_copy[i], path_copy[i + 1]).length
+
+                h = graph.get_edge(path[-1], n).length + graph.get_heuristic(n, goal) + path_length
+                # graph.set_heuristic(n, goal, h)
+                
+                path_copy[0] = h
+                extended_nodes.append(path_copy)         
+
+                    
+        extended_nodes = extended_nodes[::-1]
+        for extended_node in extended_nodes:
+            agenda.insert(0, extended_node)       
+        
+        
+        agenda = sorted(agenda, key=lambda x: (x[0], len(x)))
+        # agenda.sort(key=sort_by_heuristic)
+
+        print(agenda, end="\n\n")
+
+    return []
+
+def sort_by_heuristic(p):
+  return p[0]
 
 # (Optional) Do these for extra credit:
 def is_admissible(graph, goal):
@@ -123,13 +223,13 @@ if __name__ == "__main__":
     # start = 'The Chamber'
     # goal = 'Common Area'
 
-    from test_data import TESTGRAPH
-    graph = TESTGRAPH
+    from test_data import GRAPH0
+    graph = GRAPH0
     start = 'S'
     goal = 'G'
 
     # Use different algorithms here
-    path = bfs(graph, start, goal)
+    path = a_star(graph, start, goal)
 
     if path:
         print(path)
@@ -142,7 +242,7 @@ if __name__ == "__main__":
         # Visualization (extra credit)
         try:
             # Change 'algorithm_label' for better labelling
-            algorithm_label = "BFS"
+            algorithm_label = "A_star"
 
             from visualize import draw_graph
             draw_graph(graph, goal=goal, output_name=algorithm_label+" Graph",

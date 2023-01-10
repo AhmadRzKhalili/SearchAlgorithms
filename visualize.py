@@ -23,5 +23,5 @@ def draw_graph(graph, goal=None, selected_edges=[], output_dir="output", output_
 
 
 if __name__ == "__main__":
-    from test_data import TESTGRAPH
-    draw_graph(TESTGRAPH)
+    from test_data import GRAPH0
+    draw_graph(GRAPH0)

@@ -8,17 +8,22 @@ from graph import Edge, Graph, NODE1, NODE2, VAL
 # are lower bounds on the distance to the node with the id of
 ## "Common Area"
 
-GRAPH0 = Graph(edges=[Edge.fromdict(e) for e in [{VAL: 1, NODE1: 'S', NODE2: 'A'},
-                                                 {VAL: 1, NODE1: 'S', NODE2: 'B'},
-                                                 {VAL: 1, NODE1: 'A', NODE2: 'C'},
-                                                 {VAL: 1, NODE1: 'A', NODE2: 'D'},
+GRAPH0 = Graph(edges=[Edge.fromdict(e) for e in [{VAL: 2, NODE1: 'S', NODE2: 'A'},
+                                                 {VAL: 5, NODE1: 'S', NODE2: 'B'},
+                                                 {VAL: 2, NODE1: 'A', NODE2: 'C'},
+                                                 {VAL: 4, NODE1: 'A', NODE2: 'D'},
                                                  {VAL: 1, NODE1: 'B', NODE2: 'D'},
-                                                 {VAL: 1, NODE1: 'B', NODE2: 'G'},
-                                                 {VAL: 1, NODE1: 'C', NODE2: 'D'},
-                                                 {VAL: 1, NODE1: 'D', NODE2: 'G'},
+                                                 {VAL: 5, NODE1: 'B', NODE2: 'G'},
+                                                 {VAL: 3, NODE1: 'C', NODE2: 'D'},
+                                                 {VAL: 2, NODE1: 'D', NODE2: 'G'},
                                                  ]],
                heuristic={'G':
-               {}})
+               {'S': 0,
+                'A': 2,
+                'B': 3,
+                'C': 2,
+                'D': 1,
+                'G': 0}})
 
 GRAPH1 = Graph(edges=[Edge.fromdict(e) for e in [{VAL: 5, NODE1: 'Common Area', NODE2: 'Stairs'},
                                                  {VAL: 15, NODE1: 'Entrance Hall',
