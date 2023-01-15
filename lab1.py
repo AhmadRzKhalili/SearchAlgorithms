@@ -86,80 +86,166 @@ def dfs(graph: Graph, start, goal):
     return []
 
 
-def ids(graph: Graph, start, goal):
+# def ids(graph: Graph, start, goal):
     
-    level = 0
-    level_limit = 1
+#     level = 0
+#     level_limit = 0
 
     
-    agenda = []
-    agenda.append([start])
+#     agenda = []
+#     agenda.append([start])
 
-    print(agenda, end="\n\n")
-    if start == goal:
-        return [start]
+#     print(agenda, end="\n\n")
+#     if start == goal:
+#         return [start]
 
-    while len(agenda) != 0:
+#     while len(agenda) != 0:
 
-        agenda = []
-        agenda.append([start])
-        agenda_copy = agenda.copy()
+#         agenda = []
+#         agenda.append([start])
+#         agenda_copy = agenda.copy()
 
-        while get_graph_level(agenda) <= level_limit:
+#         while get_graph_level(agenda) - 1 <= level_limit:
 
-            path = agenda.pop(0)
+#             path = agenda.pop(0)
 
-            if len(path) == level_limit:
-                agenda.append(path)
-                continue
+#             if len(path) - 1 == level_limit:
 
-            node = path[-1]
+#                 if path[-1] == goal:
 
-            if node == goal:
-                print(agenda, end="\n\n")
-                return path
+#                     print(agenda, end="\n\n")
+#                     return path
 
-            neighbors = graph.get_connected_nodes(node)
+#                 agenda.insert(0, path)
+
+#                 if equal_paths_level(agenda):
+#                     break
+
+#                 continue
+                
+#             else:
+#                 node = path[-1]
+#                 if node == goal:
+#                     print(agenda, end="\n\n")
+#                     return path
+
+#                 neighbors = graph.get_connected_nodes(node)
+                
+#                 extended_nodes = []
+
+#                 for n in neighbors:
+#                     if n not in path:
+#                         path_copy = path.copy()
+#                         path_copy.append(n)
+#                         extended_nodes.append(path_copy)
+#                         # agenda.insert(0, path_copy)            
+
+                            
+#                 extended_nodes = extended_nodes[::-1]
+#                 for extended_node in extended_nodes:
+#                     agenda.insert(0, extended_node)       
             
-            extended_nodes = []
-
-            for n in neighbors:
-
-                if n not in path:
-                    path_copy = path.copy()
-                    path_copy.append(n)
-                    extended_nodes.append(path_copy)
-                    # agenda.insert(0, path_copy)            
-
-                        
-            extended_nodes = extended_nodes[::-1]
-            for extended_node in extended_nodes:
-                agenda.insert(0, extended_node)       
-            
-            print(agenda,  end="\n\n")
+#             print(agenda,  end="\n\n")
         
-        print("---------------------------")
-        agenda_copy = agenda.copy()
-            # level += 1
+#         print("---------------------------")
+#         # agenda_copy = agenda.copy()
+#             # level += 1
 
-        # if level > level_limit:
-        #     # print("-", (level - 1), agenda,  end="\n\n")
-        #     level = 0
-        level_limit += 1
+#         for path in agenda:
+#             if path[-1] == goal:
+#                 return path
 
-    return []
+#         # if level > level_limit:
+#         #     # print("-", (level - 1), agenda,  end="\n\n")
+#         #     level = 0
+#         level_limit += 1
 
-def get_graph_level(nodes):
-    level = len(nodes[0])
+#     return []
 
-    for node in nodes:
-        if len(node) > level:
-            level = len(node)
+# def get_graph_level(nodes):
+#     level = len(nodes[0])
+
+#     for node in nodes:
+#         if len(node) > level:
+#             level = len(node)
     
-    return level
+#     return level
+
+# def equal_paths_level(agenda):
+
+#     level = len(agenda[0])
+
+#     for path in agenda:
+#         if len(path) != level:
+#             return False
+    
+#     return True
+
+# def ids(graph: Graph, start, goal):
+#     max_level = len(graph.edges)
+
+#     agenda = []
+
+#     for limit in range(max_level + 1):
+#         path = DLS(start, goal, limit, agenda)
+#         if (len(path) != 0):
+#             return path
+
+#     return []
+
+# def DLS(start, goal, max_level, agenda):
+ 
+#     if start == goal:
+#         return [start]
+
+#     if max_level <= 0:
+#         return False
+
+#     for node in graph.get_connected_nodes(start):
+#         if(DLS(node, goal, max_level - 1)):
+#             return True
+
+#     return False
 
 def hill_climbing(graph: Graph, start, goal):
-    raise NotImplementedError
+    agenda = []
+    agenda.append([graph.get_heuristic(start, goal), start])
+    print(agenda, end="\n\n")
+    
+    while len(agenda) != 0:
+
+
+        path = agenda.pop(0)
+        node = path[-1]
+
+        if node == goal:
+            print(agenda, end="\n\n")
+            return path[1:]
+
+        neighbors = graph.get_connected_nodes(node)
+        
+        extended_nodes = []
+
+        for n in neighbors:
+            if n not in path:
+                path_copy = path.copy()
+                path_copy.append(n)
+
+                h =  graph.get_heuristic(n, goal)
+                
+                path_copy[0] = h
+                extended_nodes.append(path_copy)
+
+        extended_nodes = extended_nodes[::-1]
+        extended_nodes = sorted(extended_nodes, key=lambda x: (x[0]))
+        for i in range(len(extended_nodes)):
+            extended_node = extended_nodes.pop(-1)
+            agenda.insert(0, extended_node)       
+    
+
+        print(agenda, end="\n\n")
+
+    return []
 
 
 def beam_search(graph: Graph, start, goal, beam_width):
@@ -216,6 +302,29 @@ def a_star(graph: Graph, start, goal):
 
     return []
 
+# User defined functions
+
+def sort_agenda_hill_climbing(agenda):
+    agenda_copy = agenda.copy()
+    
+    for i in range(len(agenda) - 1):
+        for j in range(0, len(agenda) - i - 1):
+
+            # heuristic comparison
+            if agenda[j][0] > agenda[j + 1][0]:
+                agenda[j], agenda[j + 1] = agenda[j + 1], agenda[j]
+
+            # number of extended nodes comparison
+            if len(agenda[j]) < len(agenda[j + 1]):
+                agenda[j], agenda[j + 1] = agenda[j + 1], agenda[j]
+
+            for k in range(1, len(agenda[j + 1])):
+                if agenda[j][k] > agenda[j + 1][k]:
+                    agenda[j], agenda[j + 1] = agenda[j + 1], agenda[j]
+
+    return agenda
+
+
 # (Optional) Do these for extra credit:
 def is_admissible(graph, goal):
     raise NotImplementedError
@@ -239,7 +348,7 @@ if __name__ == "__main__":
     goal = 'G'
 
     # Use different algorithms here
-    path = ids(graph, start, goal)
+    path = hill_climbing(graph, start, goal)
 
     if path:
         print(path)
@@ -252,7 +361,7 @@ if __name__ == "__main__":
         # Visualization (extra credit)
         try:
             # Change 'algorithm_label' for better labelling
-            algorithm_label = "IDS"
+            algorithm_label = "Hill Climbing"
 
             from visualize import draw_graph
             draw_graph(graph, goal=goal, output_name=algorithm_label+" Graph",
