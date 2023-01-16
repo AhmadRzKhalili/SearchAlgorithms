@@ -214,7 +214,6 @@ def hill_climbing(graph: Graph, start, goal):
     
     while len(agenda) != 0:
 
-
         path = agenda.pop(0)
         node = path[-1]
 
@@ -249,11 +248,62 @@ def hill_climbing(graph: Graph, start, goal):
 
 
 def beam_search(graph: Graph, start, goal, beam_width):
-    raise NotImplementedError
+    agenda = []
+    agenda.append([graph.get_heuristic(start, goal), start])
+    
+    while len(agenda) != 0:
+        path = agenda.pop(0)
+        node = path[-1]
+
+        if node == goal:
+            print(agenda, end="\n\n")
+            return path[1:]
+                    
+
+        neighbors = graph.get_connected_nodes(node)
+
+        for n in neighbors:
+            if n not in path:
+                path_copy = path.copy()
+                path_copy.append(n)
+                
+                h =  graph.get_heuristic(n, goal)
+                path_copy[0] = h
+
+                agenda.append(path_copy)
+                    
+        agenda = sorted(agenda, key=lambda x:(x[0]))
+        agenda = agenda[:beam_width]
+        print(agenda,  end="\n\n")
+
+    return []
 
 
 def ucs(graph: Graph, start, goal):
-    raise NotImplementedError
+    agenda = []
+    agenda.append([start])
+    
+    while len(agenda) != 0:
+        path = agenda.pop(0)
+        node = path[-1]
+
+        if node == goal:
+            print(agenda, end="\n\n")
+            return path
+                    
+
+        neighbors = graph.get_connected_nodes(node)
+
+        for n in neighbors:
+            if n not in path:
+                path_copy = path.copy()
+                path_copy.append(n)
+                agenda.append(path_copy)
+                    
+        agenda = sorted(agenda, key=lambda x:path_length(graph, x))
+        print(agenda,  end="\n\n")
+
+    return []
 
 # todo: fix node priority in agenda paths
 def a_star(graph: Graph, start, goal):
@@ -346,9 +396,10 @@ if __name__ == "__main__":
     graph = GRAPH0
     start = 'S'
     goal = 'G'
-
+    
     # Use different algorithms here
-    path = hill_climbing(graph, start, goal)
+    # path = beam_search(graph, start, goal, 1)
+    path = ucs(graph, start, goal)
 
     if path:
         print(path)
@@ -361,7 +412,7 @@ if __name__ == "__main__":
         # Visualization (extra credit)
         try:
             # Change 'algorithm_label' for better labelling
-            algorithm_label = "Hill Climbing"
+            algorithm_label = "UCS"
 
             from visualize import draw_graph
             draw_graph(graph, goal=goal, output_name=algorithm_label+" Graph",
