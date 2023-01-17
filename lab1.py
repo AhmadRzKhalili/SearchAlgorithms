@@ -86,126 +86,64 @@ def dfs(graph: Graph, start, goal):
     return []
 
 
-# def ids(graph: Graph, start, goal):
+def ids(graph: Graph, start, goal):
+    agenda = []
+    agenda.append([start])
+
+    level = 0
+
+    # checking with level_limit = 0
+    if start == goal:
+        return [start]
     
-#     level = 0
-#     level_limit = 0
-
+    print(agenda,  end="\n\n")
     
-#     agenda = []
-#     agenda.append([start])
+    for level_limit in range(1, len(graph.nodes)):
+        agenda = []
+        agenda.append([start])
+        level = 0
 
-#     print(agenda, end="\n\n")
-#     if start == goal:
-#         return [start]
+        while len(agenda) != 0:
+            print("--------------------------------")
+            print(agenda,  end="\n\n")
+            print(level)
 
-#     while len(agenda) != 0:
-
-#         agenda = []
-#         agenda.append([start])
-#         agenda_copy = agenda.copy()
-
-#         while get_graph_level(agenda) - 1 <= level_limit:
-
-#             path = agenda.pop(0)
-
-#             if len(path) - 1 == level_limit:
-
-#                 if path[-1] == goal:
-
-#                     print(agenda, end="\n\n")
-#                     return path
-
-#                 agenda.insert(0, path)
-
-#                 if equal_paths_level(agenda):
-#                     break
-
-#                 continue
-                
-#             else:
-#                 node = path[-1]
-#                 if node == goal:
-#                     print(agenda, end="\n\n")
-#                     return path
-
-#                 neighbors = graph.get_connected_nodes(node)
-                
-#                 extended_nodes = []
-
-#                 for n in neighbors:
-#                     if n not in path:
-#                         path_copy = path.copy()
-#                         path_copy.append(n)
-#                         extended_nodes.append(path_copy)
-#                         # agenda.insert(0, path_copy)            
-
-                            
-#                 extended_nodes = extended_nodes[::-1]
-#                 for extended_node in extended_nodes:
-#                     agenda.insert(0, extended_node)       
+            path = agenda.pop(0)
+            node = path[-1]
             
-#             print(agenda,  end="\n\n")
-        
-#         print("---------------------------")
-#         # agenda_copy = agenda.copy()
-#             # level += 1
+            if node == goal:
+                print(agenda, end="\n\n")
+                return path
 
-#         for path in agenda:
-#             if path[-1] == goal:
-#                 return path
+            neighbors = graph.get_connected_nodes(node)
+            level += 1
 
-#         # if level > level_limit:
-#         #     # print("-", (level - 1), agenda,  end="\n\n")
-#         #     level = 0
-#         level_limit += 1
+            if level > level_limit:
+                if len(agenda) == 0:
+                    break
+                else:
+                    path = agenda.pop(0)
+                    level = len(path) - 1
+                    agenda.insert(0, path)
+                    continue
 
-#     return []
+            extended_nodes = []
 
-# def get_graph_level(nodes):
-#     level = len(nodes[0])
+            for n in neighbors:
 
-#     for node in nodes:
-#         if len(node) > level:
-#             level = len(node)
-    
-#     return level
+                if n not in path:
+                    path_copy = path.copy()
+                    path_copy.append(n)
+                    extended_nodes.append(path_copy)
+                    # agenda.insert(0, path_copy)            
 
-# def equal_paths_level(agenda):
+            extended_nodes = extended_nodes[::-1]
+            for extended_node in extended_nodes:
+                agenda.insert(0, extended_node)       
+            
 
-#     level = len(agenda[0])
+    return []
 
-#     for path in agenda:
-#         if len(path) != level:
-#             return False
-    
-#     return True
-
-# def ids(graph: Graph, start, goal):
-#     max_level = len(graph.edges)
-
-#     agenda = []
-
-#     for limit in range(max_level + 1):
-#         path = DLS(start, goal, limit, agenda)
-#         if (len(path) != 0):
-#             return path
-
-#     return []
-
-# def DLS(start, goal, max_level, agenda):
- 
-#     if start == goal:
-#         return [start]
-
-#     if max_level <= 0:
-#         return False
-
-#     for node in graph.get_connected_nodes(start):
-#         if(DLS(node, goal, max_level - 1)):
-#             return True
-
-#     return False
 
 def hill_climbing(graph: Graph, start, goal):
     agenda = []
@@ -342,11 +280,26 @@ def a_star(graph: Graph, start, goal):
 
                     
         extended_nodes = extended_nodes[::-1]
-        for extended_node in extended_nodes:
-            agenda.insert(0, extended_node)       
+        # print(extended_nodes)
+
+        if len(agenda) == 0:
+            for extended_node in extended_nodes:
+                agenda.insert(0, extended_node) 
+        else:
+            agenda_copy = agenda.copy()
+            for extended_node in extended_nodes:
+                for i in range(len(agenda)):
+                    path = agenda[i]
+
+                    # heuristic comparison
+                    if path[0] > extended_node[0]:
+                        agenda_copy.insert(i, extended_node)
+            agenda = agenda_copy
+            # agenda.insert(0, extended_node)       
         
         
-        agenda = sorted(agenda, key=lambda x: (x[0], len(x)))
+        # agenda = sorted(agenda, key=lambda x: (x[0], len(x)))
+        # agenda = a_star_sort(agenda)
 
         print(agenda, end="\n\n")
 
@@ -354,7 +307,7 @@ def a_star(graph: Graph, start, goal):
 
 # User defined functions
 
-def sort_agenda_hill_climbing(agenda):
+def a_star_sort(agenda):
     agenda_copy = agenda.copy()
     
     for i in range(len(agenda) - 1):
@@ -364,14 +317,14 @@ def sort_agenda_hill_climbing(agenda):
             if agenda[j][0] > agenda[j + 1][0]:
                 agenda[j], agenda[j + 1] = agenda[j + 1], agenda[j]
 
-            # number of extended nodes comparison
-            if len(agenda[j]) < len(agenda[j + 1]):
-                agenda[j], agenda[j + 1] = agenda[j + 1], agenda[j]
 
-            for k in range(1, len(agenda[j + 1])):
-                if agenda[j][k] > agenda[j + 1][k]:
+            elif agenda[j][0] == agenda[j + 1][0]:
+
+                # number of visited node comparsion
+                if len(agenda[j]) > len(agenda[j + 1]):
                     agenda[j], agenda[j + 1] = agenda[j + 1], agenda[j]
 
+            
     return agenda
 
 
@@ -399,7 +352,7 @@ if __name__ == "__main__":
     
     # Use different algorithms here
     # path = beam_search(graph, start, goal, 1)
-    path = ucs(graph, start, goal)
+    path = ids(graph, start, goal)
 
     if path:
         print(path)
@@ -412,7 +365,7 @@ if __name__ == "__main__":
         # Visualization (extra credit)
         try:
             # Change 'algorithm_label' for better labelling
-            algorithm_label = "UCS"
+            algorithm_label = "IDS"
 
             from visualize import draw_graph
             draw_graph(graph, goal=goal, output_name=algorithm_label+" Graph",
