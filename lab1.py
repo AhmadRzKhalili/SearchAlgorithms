@@ -330,11 +330,28 @@ def a_star_sort(agenda):
 
 # (Optional) Do these for extra credit:
 def is_admissible(graph, goal):
-    raise NotImplementedError
+    for node in graph.nodes:
+        h = graph.get_heuristic(node, goal)
+        h_star = path_length(a_star(graph, node, goal))
+        if not (h <= h_star):
+            return False
+
+    return True
 
 
 def is_consistent(graph, goal):
-    raise NotImplementedError
+    for node in graph.nodes:
+        h = graph.get_heuristic(node, goal)
+
+        neighbors = graph.get_connected_nodes(node)
+        for successor in neighbors:
+
+            c = graph.get_edge(node, successor).length
+            h_successor = path_length(a_star(graph, node, goal))
+            if not (h <= c + h_successor):
+                return False
+
+    return True
 
 
 if __name__ == "__main__":
